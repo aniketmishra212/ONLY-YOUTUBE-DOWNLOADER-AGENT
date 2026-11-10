@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# Large media downloads & logs (Don't commit downloaded videos to GitHub)
+downloads/
+logs/
+*.mp4
+*.mp3
+*.m4a
+*.part
+*.ytdl
+*.webp
+*.jpg
+
+# Secrets & Cookies
+cookies.txt
+*.cookie
+
+# OS files
+.DS_Store
+Thumbs.db
