@@ -40,11 +40,6 @@ class YouTubeInspector:
             'lazy_playlist': True,
             'geo_bypass': True,
             'nocheckcertificate': True,
-            'extractor_args': {
-                'youtube': {
-                    'player_client': ['mweb', 'web_embedded', 'tv', 'android', 'web']
-                }
-            }
         }
         if self.cookies_file:
             opts['cookiefile'] = self.cookies_file
