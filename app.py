@@ -33,7 +33,7 @@ if "current_url" not in st.session_state:
 with st.sidebar:
     st.header("⚙️ Configuration")
     rate_limit = st.selectbox("Speed Limit", ["Unlimited", "10M", "5M", "2M", "1M"], index=0)
-    embed_subs = st.checkbox("Auto-embed Subtitles", value=True)
+    embed_subs = st.checkbox("Auto-embed Subtitles", value=False)
     embed_thumb = st.checkbox("Embed Thumbnail / Cover Art", value=True)
     st.markdown("---")
     with st.expander("🍪 Cloud 403 Bypass (Cookies)"):

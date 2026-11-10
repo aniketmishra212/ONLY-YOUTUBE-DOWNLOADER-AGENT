@@ -113,14 +113,12 @@ class YouTubeInspector:
         if not sorted_resolutions:
             sorted_resolutions = ['best']
 
-        # Extract available subtitle languages
+        # Extract only verified creator subtitles (skip automatic captions to avoid 429 rate-limiting)
         subs = []
         if info.get('subtitles'):
             subs.extend(list(info['subtitles'].keys()))
-        if info.get('automatic_captions'):
-            for lang in info['automatic_captions'].keys():
-                if lang not in subs:
-                    subs.append(f"{lang} (auto)")
+        # Prioritize common languages (en, hi, etc.)
+        subs = [s for s in subs if s in ('en', 'hi', 'es', 'fr', 'de', 'ja', 'ru')] or subs[:5]
 
         meta_result = VideoMetadata(
             id=str(info.get('id', '')),

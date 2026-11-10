@@ -192,10 +192,11 @@ class YouTubeDownloader:
             ydl_opts['merge_output_format'] = 'mp4'
 
             # Subtitles handling
-            if request.subtitles:
+            valid_subs = [s for s in request.subtitles if s and s.lower() not in ("none", "null")]
+            if valid_subs:
                 ydl_opts['writesubtitles'] = True
-                ydl_opts['writeautomaticsub'] = True
-                ydl_opts['subtitleslangs'] = request.subtitles
+                ydl_opts['writeautomaticsub'] = False # False to prevent 429 rate limit spam
+                ydl_opts['subtitleslangs'] = valid_subs
                 if request.embed_subtitles:
                     postprocessors.append({'key': 'FFmpegEmbedSubtitle'})
 
@@ -221,8 +222,22 @@ class YouTubeDownloader:
                     break
             except Exception as e:
                 last_exception = e
-                logger.warning(f"Download attempt {attempts}/{settings.MAX_RETRIES} failed: {e}")
-                time.sleep(2 ** attempts) # Exponential backoff
+                err_str = str(e)
+                logger.warning(f"Download attempt {attempts}/{settings.MAX_RETRIES} failed: {err_str}")
+
+                # Resilience: If subtitles or 429 caused failure, drop subtitles and retry immediately
+                if "subtitle" in err_str.lower() or "429" in err_str:
+                    logger.warning("Dropping subtitles to bypass 429 rate limit and guarantee video download...")
+                    ydl_opts.pop('writesubtitles', None)
+                    ydl_opts.pop('writeautomaticsub', None)
+                    ydl_opts.pop('subtitleslangs', None)
+                    if 'postprocessors' in ydl_opts:
+                        ydl_opts['postprocessors'] = [
+                            p for p in ydl_opts['postprocessors']
+                            if p.get('key') != 'FFmpegEmbedSubtitle'
+                        ]
+
+                time.sleep(1) # Quick retry
 
         if not extracted_info and last_exception:
             error_text = str(last_exception)
