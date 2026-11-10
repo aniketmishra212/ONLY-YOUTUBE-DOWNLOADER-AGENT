@@ -137,13 +137,15 @@ class YouTubeDownloader:
             'fragment_retries': settings.MAX_RETRIES,
             'continuedl': True,
             'noplaylist': False if request.playlist_items else True,
-            # SPEED ACCELERATORS
+            # SPEED ACCELERATORS & CLOUD 403 BYPASS
             'concurrent_fragment_downloads': settings.CONCURRENT_FRAGMENTS, # 10 parallel chunks
             'http_chunk_size': settings.HTTP_CHUNK_SIZE,                    # 10MB chunking
             'buffersize': settings.BUFFER_SIZE,                             # 1MB buffer
+            'geo_bypass': True,
+            'nocheckcertificate': True,
             'extractor_args': {
                 'youtube': {
-                    'player_client': ['android', 'web']                     # Bypass web player bandwidth throttling
+                    'player_client': ['mweb', 'web_embedded', 'tv', 'android', 'web']
                 }
             }
         }

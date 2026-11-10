@@ -38,9 +38,11 @@ class YouTubeInspector:
             'socket_timeout': 15,
             'user_agent': settings.USER_AGENT,
             'lazy_playlist': True,
+            'geo_bypass': True,
+            'nocheckcertificate': True,
             'extractor_args': {
                 'youtube': {
-                    'player_client': ['android', 'web']
+                    'player_client': ['mweb', 'web_embedded', 'tv', 'android', 'web']
                 }
             }
         }

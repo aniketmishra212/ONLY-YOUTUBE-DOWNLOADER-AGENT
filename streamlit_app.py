@@ -36,6 +36,16 @@ with st.sidebar:
     embed_subs = st.checkbox("Auto-embed Subtitles", value=True)
     embed_thumb = st.checkbox("Embed Thumbnail / Cover Art", value=True)
     st.markdown("---")
+    with st.expander("🍪 Cloud 403 Bypass (Cookies)"):
+        st.caption("Agar Streamlit Cloud par 403 Forbidden aaye, toh apne browser ke cookies yahan paste karein:")
+        cookies_input = st.text_area("Netscape cookies.txt content", height=100)
+        cookies_path = None
+        if cookies_input.strip():
+            c_file = Path("cookies.txt")
+            c_file.write_text(cookies_input.strip(), encoding="utf-8")
+            cookies_path = str(c_file.resolve())
+            st.success("Cookies applied!")
+    st.markdown("---")
     st.info("💡 **Folder Locations:**\n- Videos: `downloads/videos`\n- Audio: `downloads/audio`")
 
 # Main URL Input
@@ -51,7 +61,7 @@ if inspect_btn and url_input.strip():
     else:
         with st.spinner("Fetching video stream data..."):
             try:
-                inspector = YouTubeInspector()
+                inspector = YouTubeInspector(cookies_file=cookies_path)
                 st.session_state.metadata = inspector.inspect(url_input)
                 st.session_state.current_url = url_input
                 st.success("Metadata loaded successfully!")
@@ -119,7 +129,7 @@ if meta and st.session_state.current_url == url_input:
                 elif p.status == TaskStatus.PROCESSING:
                     prog_bar.progress(100, text="Processing & Merging audio/video with FFmpeg...")
 
-            agent = YouTubeDownloaderAgent()
+            agent = YouTubeDownloaderAgent(cookies_file=cookies_path)
             result = agent.run(url_input, custom_request=req, progress_callback=progress_callback)
 
             if result.get("success"):
@@ -165,7 +175,7 @@ if meta and st.session_state.current_url == url_input:
                 elif p.status == TaskStatus.PROCESSING:
                     prog_bar.progress(100, text="Encoding ID3 tags & Album Cover Art...")
 
-            agent = YouTubeDownloaderAgent()
+            agent = YouTubeDownloaderAgent(cookies_file=cookies_path)
             result = agent.run(url_input, custom_request=req, progress_callback=a_progress_callback)
 
             if result.get("success"):
@@ -202,7 +212,7 @@ if meta and st.session_state.current_url == url_input:
                 elif p.status == TaskStatus.PROCESSING:
                     prog_bar.progress(100, text="Finalizing file with FFmpeg...")
 
-            agent = YouTubeDownloaderAgent()
+            agent = YouTubeDownloaderAgent(cookies_file=cookies_path)
             result = agent.run(full_prompt, progress_callback=ag_progress_callback)
 
             if result.get("success"):
