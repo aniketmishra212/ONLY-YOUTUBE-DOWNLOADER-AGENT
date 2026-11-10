@@ -125,7 +125,17 @@ if meta and st.session_state.current_url == url_input:
             if result.get("success"):
                 st.success("🎉 Download Completed Successfully!")
                 res_data = result.get("result", {})
-                st.info(f"📁 **Saved To:** `{res_data.get('file_path')}` ({res_data.get('file_size_mb')} MB)")
+                fp = res_data.get('file_path')
+                st.info(f"📁 **Server File:** `{fp}` ({res_data.get('file_size_mb')} MB)")
+                if fp and os.path.exists(fp):
+                    with open(fp, "rb") as f:
+                        st.download_button(
+                            label="⬇️ Save Video to Device (Phone/PC)",
+                            data=f.read(),
+                            file_name=os.path.basename(fp),
+                            mime="video/mp4",
+                            use_container_width=True
+                        )
             else:
                 st.error(f"Download failed: {result.get('error')}")
 
@@ -161,7 +171,17 @@ if meta and st.session_state.current_url == url_input:
             if result.get("success"):
                 st.success("🎉 Audio Extraction Complete!")
                 res_data = result.get("result", {})
-                st.info(f"📁 **Saved To:** `{res_data.get('file_path')}` ({res_data.get('file_size_mb')} MB)")
+                fp = res_data.get('file_path')
+                st.info(f"📁 **Server File:** `{fp}` ({res_data.get('file_size_mb')} MB)")
+                if fp and os.path.exists(fp):
+                    with open(fp, "rb") as f:
+                        st.download_button(
+                            label="⬇️ Save Audio (MP3) to Device",
+                            data=f.read(),
+                            file_name=os.path.basename(fp),
+                            mime="audio/mpeg",
+                            use_container_width=True
+                        )
             else:
                 st.error(f"Extraction failed: {result.get('error')}")
 
@@ -188,5 +208,15 @@ if meta and st.session_state.current_url == url_input:
             if result.get("success"):
                 st.success("🎉 Agent executed successfully!")
                 st.markdown(f"**Agent Summary:**\n```\n{result.get('summary')}\n```")
+                res_data = result.get("result", {})
+                fp = res_data.get('file_path') if res_data else None
+                if fp and os.path.exists(fp):
+                    with open(fp, "rb") as f:
+                        st.download_button(
+                            label="⬇️ Save Media to Device",
+                            data=f.read(),
+                            file_name=os.path.basename(fp),
+                            use_container_width=True
+                        )
             else:
                 st.error(f"Agent execution failed: {result.get('error')}")
